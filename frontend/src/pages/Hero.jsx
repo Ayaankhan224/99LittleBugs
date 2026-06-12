@@ -2,7 +2,6 @@ import React from 'react'
 import Navbar from '../components/Navbar'
 import HeroText from '../components/HeroText'
 import HeroBottom from '../components/HeroBottom'
-import BottomCircle from '../components/BottomCircle'
 
 const Hero = () => {
   return (
@@ -10,7 +9,6 @@ const Hero = () => {
       <Navbar />
       <HeroText />
       <HeroBottom />
-      <BottomCircle />
     </div>
   )
 }

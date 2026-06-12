@@ -3,7 +3,7 @@ import Hero from './pages/Hero'
 
 const App = () => {
   return (
-    <div>
+    <div className='selection:text-black selection:bg-[#E56E3A]'>
       <Hero />
     </div>
   )
