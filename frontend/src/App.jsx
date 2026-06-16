@@ -3,7 +3,7 @@ import Hero from './pages/Hero'
 import Loading from './pages/Loading'
 import Form from './pages/Form'
 import { Routes, Route } from "react-router-dom"
-import LogIn from './pages/Login'
+import LogIn from './pages/LogIn'
 import SignUp from './pages/SignUp'
 
 const App = () => {

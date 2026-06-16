@@ -24,7 +24,7 @@ const HeroBottom = () => {
 
   return (
     <div className="flex-1 font-[poppins] flex justify-between items-end">
-      <h6>RESUMES IN</h6>
+      <h6>CREATED BY</h6>
       <Link to="/form">
         <button
           onMouseEnter={handleEnter}
@@ -38,7 +38,7 @@ const HeroBottom = () => {
           />
         </button>
       </Link>
-      <h6>INSIGHTS OUT</h6>
+      <h6>99 LITTLE BUGS</h6>
     </div>
   );
 };
