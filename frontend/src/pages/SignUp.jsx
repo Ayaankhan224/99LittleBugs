@@ -1,13 +1,13 @@
 import React from "react";
-import Back from "../components/common/Back";
-import { Link } from "react-router-dom";
+import Back from "../components/common/Back"
+import { Link } from "react-router-dom"
 
 const SignUp = () => {
   return (
     <div className="h-screen w-screen flex justify-center items-center">
       <div className="bg-white h-180 w-340 rounded-3xl shadow-[0_10px_60px_rgba(0,0,0,0.4)] p-2 flex">
         <div className="w-[40%] h-full rounded-l-3xl overflow-hidden">
-          <img src="/log-img.png" className="object-cover h-full w-full" />
+          <img src="/sign-img.png" className="object-cover h-full w-full" />
         </div>
         <div className="w-[60%] h-full rounded-r-3xl p-15 flex flex-col justify-between">
           <Back />

@@ -9,7 +9,7 @@ const HeroText = () => {
         impossible to miss
       </h1>
       <p className="text-[1.2rem] uppercase font-[poppins]">
-        Anker: AI-powered candidate ranking
+        AI-powered candidate ranking
         <br /> with transparent hiring insights
       </p>
     </div>
