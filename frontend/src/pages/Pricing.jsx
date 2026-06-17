@@ -2,6 +2,45 @@ import React from "react";
 import { Link } from "react-router-dom";
 
 const Pricing = () => {
+  const handlePayment = async (amount) => {
+    console.log("Clicked", amount);
+    try {
+      const response = await fetch("http://localhost:5000/create-order", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ amount }),
+      });
+
+      const order = await response.json();
+
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+
+        amount: order.amount,
+        currency: order.currency,
+        order_id: order.id,
+
+        name: "Anker",
+        description: "Premium Plan",
+
+        handler: function (response) {
+          alert("Payment Successful!");
+
+          console.log("Payment ID:", response.razorpay_payment_id);
+          console.log("Order ID:", response.razorpay_order_id);
+        },
+      };
+      const razorpay = new window.Razorpay(options);
+
+      razorpay.open();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+
   return (
     <div className="h-screen w-screen flex items-center justify-evenly capitalize">
       <div className="bg-white w-[30%] h-[90%] rounded-4xl flex flex-col justify-between items-center shadow-[0_12px_25px_rgba(0,0,0,0.25)]">
@@ -45,7 +84,7 @@ const Pricing = () => {
             <h6 className="font-[poppins] p-3 font-light">
               Perfect For Growing teams
             </h6>
-            <div className="h-[40%] w-full bg-black rounded-4xl text-white flex justify-center items-center hover:scale-101 cursor-pointer duration-300 ease-out hover:bg-[#E56E3A]">
+            <div onClick={() => handlePayment(39)} className="h-[40%] w-full bg-black rounded-4xl text-white flex justify-center items-center hover:scale-101 cursor-pointer duration-300 ease-out hover:bg-[#E56E3A]">
               Proceed to Payment
             </div>
           </div>
@@ -73,7 +112,7 @@ const Pricing = () => {
             <h6 className="font-[poppins] p-3 font-light">
               For Large organizations
             </h6>
-            <div className="h-[40%] w-full bg-black rounded-4xl text-white flex justify-center items-center hover:scale-101 cursor-pointer duration-300 ease-out hover:bg-[#E56E3A] ">
+            <div onClick={() => handlePayment(99)} className="h-[40%] w-full bg-black rounded-4xl text-white flex justify-center items-center hover:scale-101 cursor-pointer duration-300 ease-out hover:bg-[#E56E3A] ">
               Proceed to Payment
             </div>
           </div>
