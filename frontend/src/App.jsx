@@ -9,6 +9,7 @@ import Pricing from "./pages/Pricing";
 import Contact from "./pages/Contact";
 
 
+
 const App = () => {
   return (
     <div className="selection:text-black selection:bg-[#E56E3A]">
