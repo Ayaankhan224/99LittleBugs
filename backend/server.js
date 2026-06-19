@@ -6,6 +6,9 @@ const Razorpay = require("razorpay");
 dotenv.config();
 
 const rankingRoutes = require("./src/routes/ranking.routes");
+const authRoutes = require("./src/routes/auth.routes");
+
+require("./src/config/db");
 
 const app = express();
 
@@ -18,6 +21,7 @@ app.use(cors());
 app.use(express.json());
 
 app.use("/api/rank", rankingRoutes);
+app.use("/api/auth", authRoutes);
 
 const PORT = 5000;
 

@@ -1,8 +1,12 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import gsap from "gsap";
+import { useAuth } from "../../context/AuthContext";
+import { TransitionLink } from "../../pages/Loading";
 
 const FormContent = () => {
   const fillRef = useRef(null);
+  const { user } = useAuth();
+  const currentPlan = user?.plan || "free";
 
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
@@ -13,6 +17,12 @@ const FormContent = () => {
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (currentPlan === "free") {
+      setTopCandidates(5);
+    }
+  }, [currentPlan]);
 
   const handleEnter = () => {
     gsap.to(fillRef.current, {
@@ -32,7 +42,15 @@ const FormContent = () => {
 
   const handleFileChange = (e) => {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      const selectedFiles = Array.from(e.target.files);
+
+      if (currentPlan === "free" && selectedFiles.length > 5) {
+        setError("Free plan is limited to a maximum of 5 resume uploads. Please upgrade to Premium for unlimited uploads.");
+        setFiles([]);
+        return;
+      }
+
+      setFiles(selectedFiles);
       setError("");
       setResult(null);
     }
@@ -76,8 +94,16 @@ const FormContent = () => {
     formData.append("jobDescription", jobDescription);
 
     try {
+      const token = user?.token;
+      if (!token) {
+        throw new Error("You must be logged in to rank candidates.");
+      }
+
       const response = await fetch("http://localhost:5000/api/rank", {
         method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+        },
         body: formData,
       });
 
@@ -94,12 +120,65 @@ const FormContent = () => {
     }
   };
 
-  const handleDownload = () => {
-    window.open("http://localhost:5000/api/rank/download", "_blank");
+  const handleDownload = async () => {
+    if (!user) return;
+    try {
+      setError("");
+      const response = await fetch("http://localhost:5000/api/rank/download", {
+        headers: {
+          "Authorization": `Bearer ${user.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const data = await response.json();
+        throw new Error(data.message || "Failed to export report.");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ranked_candidates.csv";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err.message || "Could not download report.");
+    }
   };
 
   return (
     <div className="w-full max-w-[650px] flex flex-col gap-6 py-10 font-[poppins]">
+      <div className={`p-4 rounded-3xl border flex justify-between items-center text-sm font-medium ${
+        currentPlan === "free" 
+          ? "bg-amber-50/50 border-amber-200 text-amber-800" 
+          : "bg-emerald-50/50 border-emerald-200 text-emerald-800"
+      }`}>
+        <div>
+          <span>Current Plan: </span>
+          <span className="font-bold uppercase">{currentPlan}</span>
+          {currentPlan === "free" && (
+            <p className="text-xs font-light text-amber-700 mt-1">
+              (Limited to 5 uploads, top 5 shortlist, locked CSV exports)
+            </p>
+          )}
+          {currentPlan === "premium" && (
+            <p className="text-xs font-light text-emerald-700 mt-1">
+              (All premium features unlocked!)
+            </p>
+          )}
+        </div>
+        {currentPlan === "free" && (
+          <TransitionLink to="/pricing">
+            <span className="bg-[#E67A3C] hover:bg-[#d86d34] text-white py-2 px-4 rounded-full text-xs font-bold transition-all duration-200 cursor-pointer shadow-sm shadow-orange-100">
+              Upgrade
+            </span>
+          </TransitionLink>
+        )}
+      </div>
+
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
           <label className="block text-sm mb-2 uppercase tracking-wider text-neutral-500 font-bold">
@@ -129,14 +208,14 @@ const FormContent = () => {
 
         <div>
           <label className="block text-sm mb-4 uppercase tracking-wider text-neutral-500 font-bold">
-            Upload Resumes
+            Upload Resumes {currentPlan === "free" && <span className="text-amber-600 font-medium">(Max 5)</span>}
           </label>
 
           <label className="flex flex-col items-center justify-center min-h-[160px] border-2 border-dashed border-[#d7d1c5] rounded-3xl cursor-pointer hover:border-[#E67A3C] hover:bg-orange-50/10 transition-all p-6">
             <div className="text-center">
               <p className="text-lg font-medium text-neutral-800">Upload CSV / PDF / DOCX / ZIP</p>
               <p className="text-sm text-neutral-500 mt-1">
-                Multiple files and zipped files supported
+                {currentPlan === "free" ? "Up to 5 files supported" : "Multiple files and zipped files supported"}
               </p>
             </div>
 
@@ -187,22 +266,25 @@ const FormContent = () => {
 
         <div>
           <h3 className="mb-4 text-xl font-medium">Candidates to Shortlist</h3>
-          <div className="flex gap-3">
-            {[5, 10, 15, 20, 50].map((item) => (
-              <label key={item} className="cursor-pointer">
-                <input
-                  type="radio"
-                  name="topCandidates"
-                  value={item}
-                  checked={topCandidates === item}
-                  onChange={(e) => setTopCandidates(Number(e.target.value))}
-                  className="hidden peer"
-                />
-                <div className="rounded-full border border-[#d7d1c5] px-6 py-3 transition-all duration-300 peer-checked:bg-[#E67A3C] peer-checked:text-white">
-                  Top {item}
-                </div>
-              </label>
-            ))}
+          <div className="flex gap-3 flex-wrap">
+            {[5, 10, 15, 20, 50].map((item) => {
+              if (currentPlan === "free" && item > 5) return null;
+              return (
+                <label key={item} className="cursor-pointer">
+                  <input
+                    type="radio"
+                    name="topCandidates"
+                    value={item}
+                    checked={topCandidates === item}
+                    onChange={(e) => setTopCandidates(Number(e.target.value))}
+                    className="hidden peer"
+                  />
+                  <div className="rounded-full border border-[#d7d1c5] px-6 py-3 transition-all duration-300 peer-checked:bg-[#E67A3C] peer-checked:text-white">
+                    Top {item}
+                  </div>
+                </label>
+              );
+            })}
           </div>
         </div>
 
@@ -238,11 +320,22 @@ const FormContent = () => {
             </div>
             <button
               onClick={handleDownload}
-              className="bg-[#E67A3C] hover:bg-[#d86d34] text-white px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-md shadow-orange-100 cursor-pointer"
+              className={`px-5 py-2.5 rounded-full text-sm font-semibold transition-all duration-200 flex items-center gap-2 shadow-md cursor-pointer ${
+                currentPlan === "free"
+                  ? "bg-neutral-200 text-neutral-400 cursor-not-allowed"
+                  : "bg-[#E67A3C] hover:bg-[#d86d34] text-white shadow-orange-100"
+              }`}
+              disabled={currentPlan === "free"}
             >
               Download CSV
             </button>
           </div>
+
+          {currentPlan === "free" && (
+            <div className="text-xs bg-amber-50 border border-amber-100 text-amber-800 p-3 rounded-2xl">
+              💡 <strong>Free plan limit:</strong> Showing only top 5 candidates. Upgrade to Premium to export the complete report.
+            </div>
+          )}
 
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">

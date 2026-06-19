@@ -115,7 +115,7 @@ function parseResumeText(text, filename) {
 
   const yoeRegex = /(\d+(?:\.\d+)?)\+?\s*(?:years?|yrs)\b/gi;
   let match;
-  let years_of_experience = 3.0; // default
+  let years_of_experience = 3.0;
   let maxYears = 0;
   while ((match = yoeRegex.exec(text)) !== null) {
     const val = parseFloat(match[1]);

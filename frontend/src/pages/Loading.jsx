@@ -70,7 +70,7 @@ const Loading = ({ children }) => {
               duration: 1.2,
               ease: "power3.out",
             },
-            "-=0.6" 
+            "-=0.6"
           );
         }, 50);
       },
@@ -89,7 +89,7 @@ const Loading = ({ children }) => {
 
   useGSAP(() => {
     gsap.set(loaderRef.current, { display: "flex" });
-    gsap.set(".stair", { yPercent: 0 }); // start covered
+    gsap.set(".stair", { yPercent: 0 });
     gsap.set(pageRef.current, { scale: 1.15 });
 
     const entryTl = gsap.timeline({

@@ -99,8 +99,6 @@ const Creators = () => {
     }
   };
 
-  
-
   return (
     <div className='min-h-screen w-full flex flex-col items-center justify-start py-16 px-4 md:px-8'>
       <h1 className='text-center text-5xl md:text-7xl font-[poppins] tracking-tighter text-neutral-900 mb-12 select-none'>

@@ -13,7 +13,7 @@ import Lenis from "lenis";
 const App = () => {
   useEffect(() => {
     const lenis = new Lenis({
-      duration: 1.2,
+      duration: 2.2,
       smoothWheel: true,
     });
     function raf(time) {

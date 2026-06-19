@@ -30,9 +30,9 @@ const Contact = () => {
 
   const handleClick = () => {
     gsap.timeline({
-      repeat: 3,
+      repeat: 5,
       onComplete: () =>{
-        document.querySelector(".submit-text").textContent = "Done";
+        gsap.to
       }
     })
     .to(".letter", {
@@ -106,7 +106,7 @@ const Contact = () => {
             onClick={handleClick}
             className="rounded-4xl flex items-center gap-7 bg-black text-white w-fit py-3 px-5 cursor-pointer mt-17 text-3xl font-[poppins]"
           >
-            <div className="submit-text">
+            <div className="btnText">
               {"Submit".split("").map((char, i) => (
                 <span key={i} className="letter inline-block">
                   {char}
