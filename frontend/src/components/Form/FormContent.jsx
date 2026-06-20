@@ -99,7 +99,7 @@ const FormContent = () => {
         throw new Error("You must be logged in to rank candidates.");
       }
 
-      const response = await fetch("http://localhost:5000/api/rank", {
+      const response = await fetch("https://anker-9k4b.onrender.com/api/rank", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
@@ -124,7 +124,7 @@ const FormContent = () => {
     if (!user) return;
     try {
       setError("");
-      const response = await fetch("http://localhost:5000/api/rank/download", {
+      const response = await fetch("https://anker-9k4b.onrender.com/api/rank/download", {
         headers: {
           "Authorization": `Bearer ${user.token}`,
         },

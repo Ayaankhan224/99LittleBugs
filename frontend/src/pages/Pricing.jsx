@@ -14,7 +14,7 @@ const Pricing = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/api/auth/plan", {
+      const response = await fetch("https://anker-9k4b.onrender.com/api/auth/plan", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -48,7 +48,7 @@ const Pricing = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5000/create-order", {
+      const response = await fetch("https://anker-9k4b.onrender.com/create-order", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
